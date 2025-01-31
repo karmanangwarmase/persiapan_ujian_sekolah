@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Latihan Soal Persiapan US</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 10px;
+        }
+
+        .container {
+            text-align: center;
+            padding: 15px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .container img {
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #34495e;
+        }
+
+        #timer {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #e74c3c;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #3498db;
+            border-radius: 25px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #2980b9;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .question p {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .question label {
+            display: block;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .question label:hover {
+            background: #e9ecef;
+        }
+
+        .question input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        #result {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        #result p {
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .button-group button {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .container img {
+                height: 50px;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+            }
+            
+            .question p {
+                font-size: 1rem;
+            }
+            
+            .question label {
+                font-size: 0.95rem;
+                padding: 10px;
+            }
+            
+            button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo.png" alt="Logo SMAS Muhammadiyah 1 Pulau Morotai">
+        <h1>SMAS Muhammadiyah 1 Pulau Morotai</h1>
+        <h2>Sejarah Peminatan</h2>
+    </div>
+
+    <div id="timer">Waktu Tersisa: 60:00</div>
+
+    <form id="userInfo">
+        <div class="question">
+            <input type="text" id="nama" placeholder="Masukkan Nama" required>
+            <input type="text" id="kelas" placeholder="Masukkan Kelas" required>
+            <button type="button" onclick="nextSession()">Mulai Ujian</button>
+        </div>
+    </form>
+
+    <div id="session2" style="display: none;">
+        <div class="question" id="currentQuestion"></div>
+        <div class="button-group">
+            <button type="button" onclick="prevQuestion()" style="background: #95a5a6">Kembali</button>
+            <button type="button" onclick="nextQuestion()" id="nextButton" style="background: #2ecc71">Lanjut</button>
+        </div>
+    </div>
+
+    <div id="result">
+        <h2>Hasil Pengerjaan</h2>
+        <p id="resultNama"></p>
+        <p id="resultKelas"></p>
+        <p id="resultWaktu"></p>
+        <p id="resultBenar"></p>
+        <p id="resultSalah"></p>
+        <p id="resultNilai"></p>
+        <p>Silahkan screenshot hasil Anda.</p>
+        <button type="button" onclick="startAgain()" style="background: #e67e22">Mulai Kembali (Percobaan ke-<span id="attempt">1</span>)</button>
+    </div>
+
+    <script>
+        let timeLeft = 3600;
+        let timerInterval;
+        let attempt = 1;
+        let currentQuestionIndex = 0;
+        const userAnswers = [];
+        const questions = [
+            {
+                question: "1. Perhatikan pernyataan berikut ini! Sejarah tidak berkembang kedepan dengan tujuan yang pasti, tetapi bergerak seperti garis lingkaran yang tinggi rendahnya diakibatkan oleh keadaan manusia. Pernyataan tersebut merupakan pengertian sejarah menurut…",
+                options: [
+                    { label: "A. Thomas Charlyle", value: "a" },
+                    { label: "B. Ibnu Khaldun", value: "b" },
+                    { label: "C. Aristoteles", value: "c" },
+                    { label: "D. Herodotu", value: "d" },
+                    { label: "E. Plato", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "2. Sejarah dapat memberikan aspirasi bagi generasi muda yang salah satunya didapat dengan mengunjungi Candi Borobudur. Candi tersebut membuktikan bahwa masyarakat Indonesia masih…",
+                options: [
+                    { label: "A. Memiliki pengetahuan yang tinggi berkat bantuan India", value: "a" },
+                    { label: "B. Mempunyai peradaban yang maju", value: "b" },
+                    { label: "C. Mempunyai jiwa seni yang tinggi", value: "c" },
+                    { label: "D. Menganut ajaran Hindu Budha", value: "d" },
+                    { label: "E. Mendapat pengaruh Mesir", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "3. Perhatikan pernyataan-pernyataan berikut. 1) Menghargai nilai nilai perjuangan para pahlawan 2) Memahami budaya bangsa asing yang lebih superior 3) Menerapkan sikap bela tanah air sesuai dengan perkembangan zaman 4) Mengenal kemajuan teknologi yang dihasilkan bangsa asing Manfaat mempelajari sejarah dalam kehidupan masa kini ditunjukkan pada nomor…",
+                options: [
+                    { label: "A. 1 dan 2", value: "a" },
+                    { label: "B. 1 dan 3", value: "b" },
+                    { label: "C. 2 dan 3", value: "c" },
+                    { label: "D. 2 dan 4", value: "d" },
+                    { label: "E. 3 dan 4", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "4. Dengan mempelajari kisah kisah sejarah di berbagai belahan dunia seolah olah kita bertamasya dan berkeliling dunia. Hal ini merupakan kegunaan sejarah dalam segi …",
+                options: [
+                    { label: "A. Pelajaran", value: "a" },
+                    { label: "B. Ilham", value: "b" },
+                    { label: "C. Pengajaran", value: "c" },
+                    { label: "D. Hiburan", value: "d" },
+                    { label: "E. Pendidikan", value: "e" }
+                ],
+                answer: "d"
+            },
+            {
+                question: "5. Sejarah adalah suatu pengetahuan yang disusun atas hasil penyelidikan beberapa peristiwa yang dibuktikan dengan kenyataan. Pernyataan tersebut dinyatakan oleh…",
+                options: [
+                    { label: "A. J.B Borry", value: "a" },
+                    { label: "B. York Powell", value: "b" },
+                    { label: "C. R.Moh Ali", value: "c" },
+                    { label: "D. Moh. Yamin", value: "d" },
+                    { label: "E. Kontowijoyo", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "6. Salah satu fungsi sejarah yang paling utama adalah sebagai media untuk mengetahui masa lampau dan sebagai sebuah ilmu. Hal ini merupakan fungsi sejarah secara…",
+                options: [
+                    { label: "A. Umum", value: "a" },
+                    { label: "B. Keseluruhan", value: "b" },
+                    { label: "C. Intrinsik", value: "c" },
+                    { label: "D. Ekstrinsik", value: "d" },
+                    { label: "E. Pendidikan", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "7. Teknik yang dilakukan untuk mengolah sumber sumber sejarah kemudian menafsirkannya dinamakan…",
+                options: [
+                    { label: "A. Diakronik", value: "a" },
+                    { label: "B. Sinkronik", value: "b" },
+                    { label: "C. Analisis", value: "c" },
+                    { label: "D. Interpretasi", value: "d" },
+                    { label: "E. Kausalitas", value: "e" }
+                ],
+                answer: "d"
+            },
+            {
+                question: "8. Para sejarawan pada umumnya membagi periode dalam sejarah menjadi tiga bagian yang biasanya disebut dengan…",
+                options: [
+                    { label: "A. Three Times", value: "a" },
+                    { label: "B. Theree Histories", value: "b" },
+                    { label: "C. Theree Age Sistem", value: "c" },
+                    { label: "D. Theree Ages", value: "d" },
+                    { label: "E. Theree Sistem", value: "e" }
+                ],
+                answer: "d"
+            },
+            {
+                question: "9. Pada dasarnya konsep kronologi sangat penting dan diperlukan dalam mempelajari ilmu sejarah. Konsep ini bertujuan untuk …",
+                options: [
+                    { label: "A. Menyeleksi Berbagai Peristiwa", value: "a" },
+                    { label: "B. Mengklasifiksi Berbagai Peristiwa", value: "b" },
+                    { label: "C. Mengurutkan Peristiwa Berdasarkan Waktu", value: "c" },
+                    { label: "D. Mengungkapkan Berbagai Peristiwa", value: "d" },
+                    { label: "E. Pembuat Pedoman Peristiwa Penting", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "10. Perhatikan data-data berikut. 1. Masa Pergerakan Nasional 2. Abad Pertengahan 3. Masa Pendudukan Jepang 4. Renaisans 5. Masa Reformasi Periodisasi sejarah Eropa ditunjukkan melalui nomor…",
+                options: [
+                    { label: "A. 1 Dan 3", value: "a" },
+                    { label: "B. 1 Dan 4", value: "b" },
+                    { label: "C. 2 Dan 4", value: "c" },
+                    { label: "D. 3 Dan 5", value: "d" },
+                    { label: "E. 4 Dan 5", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "11. Berita Tiongkok yang ditulis oleh Cau Ju Kua menyebutkan bahwa pada abad XII M. Penggunaan mata uang Tiongkok semakin meningkat. Para pedagang dari Tiongkok yang banyak berdatangan ke Nusantara. Hal itu membuktikan adanya…",
+                options: [
+                    { label: "A. Pengaruh yang kuat terhadap perekonomian Majapahit", value: "a" },
+                    { label: "B. Dominasi para pedagang Tiongkok di wilayah Nusantara", value: "b" },
+                    { label: "C. Hubungan dagang yang intensif dengan Tiongkok sejak abad XII M.", value: "c" },
+                    { label: "D. Hubungan yang terjalin baik antara raja Majapahit dan dinasti Tiongkok", value: "d" },
+                    { label: "E. Kegiatan perdagangan kerajaan maritim Nusantara yang semakin berkemang", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "12. J. L. Moens adalah salah satu ahli yang mendukung perang kesatria sebagai pihak yang menyebarkan ajaran dan agama Hindu ke Nusantara. Pendapat Moens ini disampaikannya berdasarkan…",
+                options: [
+                    { label: "A. Kesusastraan yang banyak menyebut tentang kedatangan pengeran Pangeran dari India", value: "a" },
+                    { label: "B. Bukti Arkeologis yang menunjukkan adanya ekspansi prajurit India ke Nusantara", value: "b" },
+                    { label: "C. Jayastamba Aau tugu kemenangan yang biasanya berada di daerah daerah taklukan", value: "c" },
+                    { label: "D. Sejarah politik yang terjadi di India dan munculnya dinasti dinasti di Jawa", value: "d" },
+                    { label: "E. Kelemahan dari teori Waisya yang menekankan peranan pedagang", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "13. Penggunaan jalur laut dalam pendagangan antar Negara,juga membawa keuntungan bagi bangsa Indonesia. Salah satu keuntungan penggunaan jalur laut dalam perdagangan bagi Indonesia adalah …",
+                options: [
+                    { label: "A. Munculnya kerajaan-kerajan Hindu Buddha di daerah pesisir pantai", value: "a" },
+                    { label: "B. Meningkatkan taraf hidup para penduduk Indonesia di daerah pesisir pantai", value: "b" },
+                    { label: "C. Memperoleh barang dagangan yang lebih murah", value: "c" },
+                    { label: "D. Indonesia menjadi negara maritim dengan armada angkatan laut yamg kuat", value: "d" },
+                    { label: "E. Tumbuhnya pusat-pusat perdagangan di daerah pesisir pantai", value: "e" }
+                ],
+                answer: "e"
+            },
+            {
+                question: "14. Organisasi adalah tempat berkumpulnya orang-orang. Salah satu organisasi kebangsaan yang didirikan diluar negeri serta yang menggunakan nama Indonesia adalah…",
+                options: [
+                    { label: "A. Partai Nasional Indonesia", value: "a" },
+                    { label: "B. Perhimpunan Indonesia", value: "b" },
+                    { label: "C. Partai Kominis Indonesia", value: "c" },
+                    { label: "D. Gerakan Indonesia", value: "d" },
+                    { label: "E. Parindra", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "15. Sumpah Pemuda adalah gerakan bersatunya pemuda yang merupakan aktualisasi integrasi kebangsaan. Hal ini terjadi karena…",
+                options: [
+                    { label: "A. Mendukung Chauvinisme dan Ultrasionalisme", value: "a" },
+                    { label: "B. Anti Kolonialisme dan Kolonialisme", value: "b" },
+                    { label: "C. Menjauhkan diskriminasi ras", value: "c" },
+                    { label: "D. Menggalang Nasionalisme", value: "d" },
+                    { label: "E. Menolak Regionalisme", value: "e" }
+                ],
+                answer: "d"
+            },
+            {
+                question: "16. Pengaruh dari kebijakan kebijakan kolonial mengakibatkan kekacauan secara politik yang mulai terlihat dari reaksi rakyat Indonesia. Reaksi ini dalam bentuk…",
+                options: [
+                    { label: "A. Adanya kerja sama antara rakyat Indonesia dan pemerintah belanda", value: "a" },
+                    { label: "B. Dibelinya rempah rempah dengan harga tinggi", value: "b" },
+                    { label: "C. Pembangunan benteng pertahanan", value: "c" },
+                    { label: "D. Pembangunan jalan jalan", value: "d" },
+                    { label: "E. Perlawanan perlawanan", value: "e" }
+                ],
+                answer: "e"
+            },
+            {
+                question: "17. Dibawah pimpinan Sultan Babullah, rakyat ternate menentang portugis. Perlawanan rakyat ternate tersebut disebabkan karena…",
+                options: [
+                    { label: "A. Tindakan portugis yang sudah melampaui batas", value: "a" },
+                    { label: "B. Portugis tidak menyukai Babullah", value: "b" },
+                    { label: "C. Sultan Babullah ingin bekerja sama dengan Inggris", value: "c" },
+                    { label: "D. Portugis membeli rempah rempah dengan mudah", value: "d" },
+                    { label: "E. Rakyat ternate ingin melakukan perdagangan", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "18. Setelah penjajahan bangsa Portugis di Nusantara, bangsa Indinesia juga di jajah oleh bangsa Belanda. Masuknya bangsa Belanda ke nusantara terjadi karena…",
+                options: [
+                    { label: "A. Kekuasaan portugis dinusantara yang melemah", value: "a" },
+                    { label: "B. Bantuan informasi dari portugis", value: "b" },
+                    { label: "C. Informasi dari kartografer dan penjelajah belanda", value: "c" },
+                    { label: "D. Hasil ekspedisi pertama dari pelaut Cornelis De Houtman", value: "d" },
+                    { label: "E. Hasil dari suatu penjelajahan yang tidak sengaja", value: "e" }
+                ],
+                answer: "d"
+            },
+            {
+                question: "19. Nusantara dijajah oleh Bangsa bangsa Barat. Bangsa barat yang pertama kali datang ke nusantara dan kemudian memonopoli perdagangan rempah rempah di Maluku yaitu…",
+                options: [
+                    { label: "A. Prancis", value: "a" },
+                    { label: "B. Belanda", value: "b" },
+                    { label: "C. Inggris", value: "c" },
+                    { label: "D. Spanyol", value: "d" },
+                    { label: "E. Portugis", value: "e" }
+                ],
+                answer: "e"
+            },
+            {
+                question: "20. India adalah sebuah negara di Asia Selatan dengan garis pantai sepanjang 7.000 India merupakan bagian dari rute perdagangan penting dan bersejarah karena memiliki peradaban yang tetap dikenal hingga saat ini. Peradaban tertua di India adalah....",
+                options: [
+                    { label: "A. Peradaban Mohenjodaro dan Harrapa", value: "a" },
+                    { label: "B. Peradaban Hindu-Buddha", value: "b" },
+                    { label: "C. Peradaban Maurya", value: "c" },
+                    { label: "D. Peradaban Asoka", value: "d" },
+                    { label: "E. Peradaban Gupta", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "21. Pada zaman kuno terdapat 2 jalur perdagangan antara Asia dengan Eropa, yaitu jalur darat dan jalur laut. Nama lain dari jalur darat adalah....",
+                options: [
+                    { label: "A. Jalan sutra", value: "a" },
+                    { label: "B. Jalan emas", value: "b" },
+                    { label: "C. Jalan berlian", value: "c" },
+                    { label: "D. Jalan tengah", value: "d" },
+                    { label: "E. Jalan pintas", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "22. Perhatikan bagan dibawah ini Pernyataan yang tepat untuk melukiskan hubungan diatas adalah.....",
+                options: [
+                    { label: "A. Masyarakat sebulum mengenal tulisan hanya bisa berbahasa tampa masa lalu", value: "a" },
+                    { label: "B. Masyarakat sebelum mengenal tulisan menggunakan bahasa untuk mewariskan masa lalu", value: "b" },
+                    { label: "C. Masyarakat sebelum mengenal tulisan menciptakan bahasa untuk menulis masa lalu", value: "c" },
+                    { label: "D. Pada masa lalu hanya milik masyarakat", value: "d" },
+                    { label: "E. Salah satu warisan masa lalu", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "23. Proses penyebaran suatu agama harus ditandai dengan bukti. Salah satu bukti sejarah yang menyatakan tentang masuknya Agama Islam di Indonesia pada abad ke 11 adalah...",
+                options: [
+                    { label: "A. Batu Nisan Fatimah Binti Maimun", value: "a" },
+                    { label: "B. Batu Nisan Sultan Malik as-Salah", value: "b" },
+                    { label: "C. Catatan Marcopolo", value: "c" },
+                    { label: "D. Catatan Ibnu Battutah", value: "d" },
+                    { label: "E. Catatan Dinasti Tang", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "24. Perhatikan data-data dibawah ini. 1. Perdagangan 2. pemujaan 3. Pendidikan 4. Pemaksaan 5. Kesenian Urutan saluran-saluran islamisasi di Indonesia yang benar adalah...",
+                options: [
+                    { label: "A. 1, 2, 3", value: "a" },
+                    { label: "B. 3, 2, 1", value: "b" },
+                    { label: "C. 3, 4, 5", value: "c" },
+                    { label: "D. 1, 2, 4", value: "d" },
+                    { label: "E. 1, 3, 5", value: "e" }
+                ],
+                answer: "e"
+            },
+            {
+                question: "25. Pada sidang parlemen Jepang ke-85 tanggal 7 september 1944 di Tokyo, Perdana Mentri Kunaiki Koiso mengatakan bahwa daerah to indo diperkenankan merdeka kelak di kemudian hari. Istilah daerah to indo di tujukan kepada negara...",
+                options: [
+                    { label: "A. Indochina", value: "a" },
+                    { label: "B. Indonesia", value: "b" },
+                    { label: "C. Malaisya", value: "c" },
+                    { label: "D. Singapur", value: "d" },
+                    { label: "E. Filipina", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "26. Peristiwa yang menandai berahirnya era kekuasaan bangsa barbar di eropa dan dimulainya era pemerintahan gereja dengan paus sebagai penguasa tertinggi adalah…",
+                options: [
+                    { label: "A. Dianutnya ajaran ajaran Kristen oleh bangsa bangsa barbar", value: "a" },
+                    { label: "B. Bangkitnya era renaisans pada sekitar tahun 1500 M", value: "b" },
+                    { label: "C. Pelantikan karel agung sebagai kaisar oleh Paus leo III", value: "c" },
+                    { label: "D. Sistem administrasi gereja yang mengistimewakan kaum bangsawan pemberontakan para petani terhadap penguasa dan pemerintah pada 1381", value: "d" },
+                    { label: "E. Runtuhnya kerajaan kakaisaran romawi barat pada tahun 476 M diangkatnya paus sebgai penguasa tertinggi, baik secara spiritual maupun profane", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "27. Kebudayaan Yunani kuno dan romawi dianggap oleh kaum humanis sebagai puncak peradaban eropa. Hal ini terjadi karena …",
+                options: [
+                    { label: "A. Kemajuan seni dan ilmu pengetahuannya", value: "a" },
+                    { label: "B. Hak asasi manusia diakui secara resmi oleh Negara", value: "b" },
+                    { label: "C. Kesenjangan ekonomi antaranggota masyarakat rendah", value: "c" },
+                    { label: "D. Keberthasilan yunani kuno dan romawi membangun sector pertanian", value: "d" },
+                    { label: "E. Keberhasilan yunani kuno dan romawi dalam menjaga kestabilan politik", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "28. Faktor penting yang membantu penyebaran gagasan gagasan Renaisans dari italia ke Negara Negara lain seperti inggris, prancis, jerman dan belanda adalah…",
+                options: [
+                    { label: "A. Munculnya kaum kaya baru yang berasal dari kalangan pedagang", value: "a" },
+                    { label: "B. Semakin intensnya interaksi antarnegara melalui perdagangan", value: "b" },
+                    { label: "C. Dominasi gereja yang semakin melemah", value: "c" },
+                    { label: "D. Berkembangnya seni dan sastra", value: "d" },
+                    { label: "E. Terjadinya Perang Salib", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "29. Merkantilisme yang berkembang pada era renaisans secara tidak langsung melahirkan kolonialisme dan imperialism. Hal itu terjadi karena…",
+                options: [
+                    { label: "A. Ukuran Kesejatraan/Kekuasaan Negara Adalah Jumlah Logam Mulia Yang Dimiliki", value: "a" },
+                    { label: "B. Perdagangan Internal Antara Sesame Bangsa Eropa Mengalami Titik Jenuh", value: "b" },
+                    { label: "C. Negara Menjamin Monopoli Yang Dilakukan Oleh Serikat Serikat Dagang", value: "c" },
+                    { label: "D. Adanya Kesadaran Akan Berlimpahnya Sumberdaya Diluar Negeri", value: "d" },
+                    { label: "E. Penekanannya pada pengurangan eksport dan peningkatan import", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "30. Sebelum refolusi industri, masyarakat Inggris bergantung pada pertanian dan umumnya hidup dalam kemiskinan. Kemiskinan ini diperparah oleh kebijakan encloruse yang dicanangkan oleh pemerintah inggris. Inti dari kebijakan ini adalah…",
+                options: [
+                    { label: "A. Menghentikan subsidi pemerintah dibidang pertanian", value: "a" },
+                    { label: "B. Menutup akses para petani terhadap barang barang import", value: "b" },
+                    { label: "C. Mewajibkan setiap petani untuk memproduksi benang katun", value: "c" },
+                    { label: "D. Mewajibkan setiap petani untuk memagari setiap lahan yang dikelolanya", value: "d" },
+                    { label: "E. melarang petani mengelola tanah tanah milik umum yang masih kosong", value: "e" }
+                ],
+                answer: "e"
+            },
+            {
+                question: "31. Perhatikan data berikut ini! 1. Menerima penyerahan Belanda 2. Membebaskan para tawanan perang jepang yang berasal dari eropa 3. Melucuti tentara jepang dan mengumpulkan mereka untuk dipulangkan 4. menegakkan serta memelihara kondisi damai untuk diserahkan kepada pemerintahan sekutu 5. Mencari informasi informasi tentang pasukan militer Jepang untuk diadili oleh pengadilan militer Indonesia Tugas AFNEI di Indonesia ditunjukkan pada nomor…",
+                options: [
+                    { label: "A. 1), 2), dan 3)", value: "a" },
+                    { label: "B. 1), 3), dan 5)", value: "b" },
+                    { label: "C. 2), 3), dan 4)", value: "c" },
+                    { label: "D. 2), 3), dan 5)", value: "d" },
+                    { label: "E. 3), 4), dan 5)", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "32. Demi mendukung kemerdekaan Indonesia Al-ikhwan Al-muslimin (IM) memberikan kebebasan terhadap mahasiswa Indonesia yang belajar di Kairo untuk…",
+                options: [
+                    { label: "A. Menggelar demonstrasi dan diskusi diskusi umum", value: "a" },
+                    { label: "B. Mendirikan organisasi organisasi pergerakan di Mesir", value: "b" },
+                    { label: "C. Menggunakan markas organisasi sebagai pusat pergerakan mahasiswa Indonesia", value: "c" },
+                    { label: "D. Mengikuti forum forum internasional yang menentang kolonialisme dan imperialism", value: "d" },
+                    { label: "E. Menulis tentang kemerdekaan Indonesia dikoran Koran local milik organisasi tersebut", value: "e" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "33. Perhatikan informasi berikut ini. 1. Peluncuran wahana luar angkasa yang pertama pada oktober 1957 2. Peluncuran wahana luar angkasa sepanjang tahun 1950-1960-an 3. Keberhasilan yuri Gagarin mengorbit bumi pada 1961 4. Pembangunan distrik nuklir di beberapa Negara Informasi yang menunjukkan perkembangan persenjataan dan ruang angkasa pada masa Perang Dingin adalah…",
+                options: [
+                    { label: "A. 1 dan 2", value: "a" },
+                    { label: "B. 1 dan 3", value: "b" },
+                    { label: "C. 2 dan 3", value: "c" },
+                    { label: "D. 2 dan 4", value: "d" },
+                    { label: "E. 3 dan 4", value: "e" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "34. Seiring perkembangan ilmu pengetahun dan teknologi sehingga terciptalah teknologi nano. Teknologi Nano adalah…",
+                options: [
+                    { label: "A. Teknologi yang digunakan untuk memperluas serta meningkatkan kehidupan manusia", value: "a" },
+                    { label: "B. Studi mengenai metode canggih serta peralatan yang bias digunakan untuk membangun sebuah struktur", value: "b" },
+                    { label: "C. Seperangkat alat perangkat keras dan perangkat lunak yang digunakan untuk menyimpan beragam informasi", value: "c" },
+                    { label: "D. Sistem yang menggunakan sarana teknis untuk mengirimkan informasi ataupun data dari satu tempat menuju tempat lain", value: "d" },
+                    { label: "E. Sistem yang mengendalikan zat dan material pada skala nanometer sehingga menghasikan fungsi baruyang belum pernah ada", value: "e" }
+                ],
+                answer: "e"
+            },
+            {
+                question: "35. Republik Maluku Selatan (RMS) merupakan daerah yang diproklamasikan merdeka oleh Soemokil mantan jaksa agung negara Indonesia timur. Tujuan dari Republik Maluku Selatan (RMS) adalah....",
+                options: [
+                    { label: "A. Memisahkan diri dari Indonesia bagian Timur", value: "a" },
+                    { label: "B. Menyatukan diri dengan indonesia bagian timur", value: "b" },
+                    { label: "C. Mengembangkan kemampuan masyarakat indonesia bagian timur", value: "c" },
+                    { label: "D. Membangun kekuatan militer", value: "d" },
+                    { label: "E. Menjauhkan diri dari keterpurukan", value: "e" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "36. Pada akhir tahun 1956, timbul perpecahan diantara partai partai komunis dunia, baik di blok barat maupun di blok timur. Perpecahan tersebut timbul sebagai akibat dari…",
+                options: [
+                    { label: "A. Respons brutal soviet atas refolusi Hungaria", value: "a" },
+                    { label: "B. Keputusan Uni Soviet untuk membentuk Pakta warsawa", value: "b" },
+                    { label: "C. Keputusan Uni Soviet untuk terlibat dalam konflik Tiongkok", value: "c" },
+                    { label: "D. Keputusan khruschev memelopori proses destalinisasi di Uni Soviet", value: "d" },
+                    { label: "E. Sikap Khruschev yang berulang kali mengancam Barat dengan senjata Nuklir", value: "e" }
+                ],
+                answer: "d"
+            },
+            {
+                question: "37. Doktrin adakah sebuah ajaran pada suatu aliran politik dan keagamaan serta pendirian golongan ahli ilmu pengetahuan. Perbedaan pokok antara doktrin Truman dan doktrin reagan pada periode perang dingin kedua (1979-1985) adalah bahwa dalam doktrin reagan pemerintah Amerika Serikat…",
+options: [
+{ label: "A. Berhak menumbangkan setiap rezim komunis disemua Negara", value: "a" },
+{ label: "B. Wajib membantu rakyat dimana pun untuk melawan komunisme", value: "b" },
+{ label: "C. Dapat menumbangkan setiap rezim komunis dimana pun berada", value: "c" },
+{ label: "D. Harus langsung menyerang komunisme kepusatnya, yaitu Moskwa", value: "d" },
+{ label: "E. Tidak boleh mencampuri konflik internal diantara Negara negara dunia ketiga", value: "e" }
+],
+answer: "c"
+},
+{
+question: "38. AFTA adalah bagian dari kerja sama ekonomi ASEAN. Prinsip utama dari AFTA yang diberlakukan secara resmi dan menyeluruh pada tahun 2015 adalah…",
+options: [
+{ label: "A. Berlakunya perdagangan bebas dikawasan ASEAN", value: "a" },
+{ label: "B. Membebaskan visa diantara Negara anggota ASEAN", value: "b" },
+{ label: "C. Kerja sama dalam memerangi korupsi antar Negara ASEAN", value: "c" },
+{ label: "D. Meringankan tariff dan bea masuk untuk barang barang import", value: "d" },
+{ label: "E. Kebebasan setiap Negara anggota untuk menetapkan tariff dan bea masuk", value: "e" }
+],
+answer: "a"
+},
+{
+question: "39. Untuk mengisi kemerdekaan suatu negara, maka pemerintah harus meningkatkan perekonomian. Penyebab buruknya perekonomian Indonesia pada awal kemerdekaan adalah…",
+options: [
+{ label: "A. Besarnya laju inflasi", value: "a" },
+{ label: "B. Peredaran uang tak terkendali", value: "b" },
+{ label: "C. Pajak dan bea masuk sangat kurang", value: "c" },
+{ label: "D. Banyak terjadi korupsi", value: "d" },
+{ label: "E. Blokade ekonomi oleh tentara NICA", value: "e" }
+],
+answer: "e"
+},
+{
+question: "40. Perhatikan nama nama tokoh berikut ini... 1) Prof. Dr. Supomo 2) Mr. Muh. Yamin 3) Mr. Ahmad Subarjo 4) Muh. Hatta 5. Sutan Syahrir 6) Sukarni 7) Ir. Soekarno. Pilihlah dengan benar nama nama tokoh yang termasuk dalam pidato rancangan perumusan lima dasar negara Indonesia merdeka Dibawah ini....",
+options: [
+{ label: "A. 1, 2, 3", value: "a" },
+{ label: "B. 2, 3, 4", value: "b" },
+{ label: "C. 2, 4, 7", value: "c" },
+{ label: "D. 4, 5, 6", value: "d" },
+{ label: "E. 1, 4, 7", value: "e" }
+],
+answer: "e"
+}
+];
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = `Waktu Tersisa: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showResult();
+            }
+        }, 1000);
+    }
+
+    function nextSession() {
+        const nama = document.getElementById('nama').value;
+        const kelas = document.getElementById('kelas').value;
+
+        if (!nama || !kelas) {
+            alert("Silahkan isi nama dan kelas terlebih dahulu.");
+            return;
+        }
+
+        document.getElementById('userInfo').style.display = 'none';
+        document.getElementById('session2').style.display = 'block';
+        showQuestion(currentQuestionIndex);
+    }
+
+    function showQuestion(index) {
+        const question = questions[index];
+        const questionHTML = `
+            <p>${question.question}</p>
+            ${question.options.map(opt => `
+                <label><input type="radio" name="q${index + 1}" value="${opt.value}" ${userAnswers[index] === opt.value ? 'checked' : ''}> ${opt.label}</label>
+            `).join('')}
+        `;
+        document.getElementById('currentQuestion').innerHTML = questionHTML;
+
+        // Update tombol "Lanjut" atau "Simpan"
+        if (index === questions.length - 1) {
+            document.getElementById('nextButton').textContent = 'Simpan';
+            document.getElementById('nextButton').onclick = saveAndConfirm;
+        } else {
+            document.getElementById('nextButton').textContent = 'Lanjut';
+            document.getElementById('nextButton').onclick = nextQuestion;
+        }
+    }
+
+    function nextQuestion() {
+        const selected = document.querySelector(`input[name="q${currentQuestionIndex + 1}"]:checked`);
+        if (!selected) {
+            alert("Silahkan pilih jawaban terlebih dahulu.");
+            return;
+        }
+
+        // Simpan jawaban pengguna
+        userAnswers[currentQuestionIndex] = selected.value;
+
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion(currentQuestionIndex);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            showQuestion(currentQuestionIndex);
+        }
+    }
+
+    function saveAndConfirm() {
+        const selected = document.querySelector(`input[name="q${currentQuestionIndex + 1}"]:checked`);
+        if (!selected) {
+            alert("Silahkan pilih jawaban terlebih dahulu.");
+            return;
+        }
+
+        // Simpan jawaban pengguna
+        userAnswers[currentQuestionIndex] = selected.value;
+
+        const confirmView = confirm("Apakah Anda yakin ingin melihat nilai Anda?");
+        if (confirmView) {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        clearInterval(timerInterval);
+        const nama = document.getElementById('nama').value;
+        const kelas = document.getElementById('kelas').value;
+        let benar = 0;
+        let salah = 0;
+
+        questions.forEach((q, index) => {
+            if (userAnswers[index] === q.answer) {
+                benar++;
+            } else {
+                salah++;
+            }
+        });
+
+        const nilai = (benar / questions.length) * 100;
+
+        // Tampilkan hasil
+        document.getElementById('session2').style.display = 'none';
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('resultNama').textContent = `Nama: ${nama}`;
+        document.getElementById('resultKelas').textContent = `Kelas: ${kelas}`;
+        document.getElementById('resultWaktu').textContent = `Waktu Pengerjaan: ${formatTime(3600 - timeLeft)}`;
+        document.getElementById('resultBenar').textContent = `Benar: ${benar}`;
+        document.getElementById('resultSalah').textContent = `Salah: ${salah}`;
+        document.getElementById('resultNilai').textContent = `Nilai: ${nilai.toFixed(2)}`;
+
+        // Tampilkan sesi esai
+        document.getElementById('essaySection').style.display = 'block';
+    }
+
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function startAgain() {
+        attempt++;
+        document.getElementById('attempt').textContent = attempt;
+        document.getElementById('userInfo').style.display = 'block';
+        document.getElementById('session2').style.display = 'none';
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('essaySection').style.display = 'none';
+        timeLeft = 3600;
+        currentQuestionIndex = 0;
+        userAnswers.length = 0; // Reset jawaban pengguna
+        startTimer();
+    }
+
+    // Mulai timer saat halaman dimuat
+    startTimer();
+</script>
+</body>
+</html>
